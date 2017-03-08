@@ -40,10 +40,6 @@
             this.container.innerHTML = '';
             this.menu.innerHTML = '';
 
-            var commonProps = '*';
-            var commonPropsNode = this.node('p', {}, this.menu);
-            this.addObject(this.commonPropsId, ref[commonProps], commonPropsNode);
-
             var basicStructs = ['map', 'layer', 'style'];
 
             var basicStructsNode = this.node('p', {}, this.menu);
@@ -55,6 +51,11 @@
             for (var id in ref.symbolizers) {
                 this.addObject(id, ref.symbolizers[id], symbolizersNode);
             }
+
+            var commonProps = '*';
+            var commonPropsNode = this.node('p', {}, this.menu);
+            this.addObject(this.commonPropsId, ref[commonProps], commonPropsNode);
+
             if (window.location.hash) window.location = window.location;
         },
 
