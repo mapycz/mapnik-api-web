@@ -1,0 +1,66 @@
+body {
+    font-family: sans;
+}
+
+strong {
+    font-weight: bold;
+}
+
+h3 {
+    margin-bottom: 0;
+}
+
+em {
+    font-style: normal;
+    color: dimgray;
+}
+
+#symbolizers p {
+    margin-bottom: 5px;
+    margin-top: 5px;
+}
+
+#menu {
+    position: fixed;
+    width: 170px;
+}
+
+#ref {
+    margin-left: 170px;
+}
+
+.symbolizer {
+    padding-bottom: 30px;
+}
+
+.symbolizer + .symbolizer {
+    padding-top: 20px;
+    border-top: 2px gray solid;
+}
+
+.status {
+    font-size: 0.7em;
+    border-radius: 1px;
+    color: #fff;
+    margin-left: 5px;
+    padding: 2px 5px;
+    vertical-align: middle;
+    background-color: #EB974E;
+}
+
+.status.deprecated {
+    background-color: #D64541;
+}
+
+.block {
+    display: block;
+}
+
+.smaller {
+    font-size: 0.5em;
+}
+
+.normal {
+    font-weight: normal;
+}
+
