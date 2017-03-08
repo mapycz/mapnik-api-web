@@ -98,7 +98,7 @@
                 {
                     defaultValue = 'none';
                 }
-                defaultValueNode = this.node('p', {}, parent, '<strong>Default: </strong>' + String(defaultValue));
+                defaultValueNode = this.propertyNode('Default', String(defaultValue), parent);
             }
 
             if (props['default-meaning']) {
@@ -111,15 +111,15 @@
             }
 
             if (this.isArray(props.type)) {
-                this.node('p', '', parent, '<strong>Values: </strong>' + props.type.join(', '));
+                this.propertyNode('Values', props.type.join(', '), parent);
             }
 
             if (props.functions) {
-                this.node('p', '', parent, '<strong>Functions: </strong>' + props.functions.join(', '));
+                this.propertyNode('Functions', props.functions.join(', '), parent);
             }
 
             if (props.range) {
-                this.node('p', '', parent, '<strong>Range: </strong>' + props.range);
+                this.propertyNode('Range', props.range, parent);
             }
 
             if (see_also) {
@@ -127,8 +127,12 @@
                 if (link == see_also) {
                     link = this.commonPropsId + '-' + see_also
                 }
-                this.node('p', '', parent, '<strong>See also: </strong><a href="#' + link + '">' + see_also + '</a>');
+                this.propertyNode('See also', '<a href="#' + link + '">' + see_also + '</a>', parent);
             }
+        },
+
+        propertyNode: function (name, content, parent) {
+            return this.node('p', '', parent, '<strong>' + name + ': </strong>' + content);
         },
 
         codize: function (text) {
