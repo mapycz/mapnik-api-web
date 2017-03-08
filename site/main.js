@@ -15,11 +15,6 @@
             return (Object.prototype.toString.call(obj) === '[object Array]');
         },
 
-        inArray: function (array, el) {
-            for (var i = 0; i < array.length; i++) if (array[i] === el) { return true; }
-            return false;
-        },
-
         prop_anchor: function (obj, prop) {
             return obj + '-' + prop;
         },
