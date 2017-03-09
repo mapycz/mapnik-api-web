@@ -1,14 +1,17 @@
 'use strict';
 (function (window) {
-    var UI = function () {
+    let UI = function () {
         this.menu = document.querySelector('#menu_content');
         this.container = document.querySelector('#symbolizers');
         this.fetch();
     };
 
+    let referenceUri = './mapnik/docs/api-reference/';
+
     UI.prototype = {
 
-        referenceUri: './mapnik/docs/api-reference/',
+        baseDoc: referenceUri + 'reference.json',
+        datasourcesDoc: referenceUri + 'datasources.json',
         commonPropsId: 'common',
 
         isArray: Array.isArray || function (obj) {
@@ -20,40 +23,59 @@
         },
 
         node: function (what, attrs, parent, content) {
-            var el = document.createElement(what);
-            for (var attr in attrs) el[attr] = attrs[attr];
+            let el = document.createElement(what);
+            for (let attr in attrs) el[attr] = attrs[attr];
             if (parent) parent.appendChild(el);
             if (content) el.innerHTML = content;
             return el;
         },
 
-        fetch: function () {
-            var self = this;
-            nanoajax.ajax(this.referenceUri + 'reference.json',
-                function (code, content) {
-                    self.build(JSON.parse(content));
-                });
-            return true;
+        fetchAll: function(urls, apply) {
+            let promises = [];
+            for (var url of urls) {
+                let url_capture = url;
+                promises.push(new Promise(function (resolve, reject) {
+                    nanoajax.ajax(url_capture,
+                        function (code, content) {
+                            resolve([url_capture, content]);
+                        });
+                }));
+            }
+
+            Promise.all(promises).then(apply);
         },
 
-        build: function (ref) {
+        fetch: function () {
+            let urls = [this.baseDoc, this.datasourcesDoc];
+            let self = this;
+            let apply = function (results) {
+                results = new Map(results);
+                self.buildBase(JSON.parse(results.get(self.baseDoc)));
+                self.buildDatasources(JSON.parse(results.get(self.datasourcesDoc)));
+                //console.log(results);
+            };
+
+            this.fetchAll(urls, apply);
+        },
+
+        buildBase: function (ref) {
             this.container.innerHTML = '';
             this.menu.innerHTML = '';
 
-            var basicStructs = ['map', 'layer', 'style'];
+            let basicStructs = ['map', 'layer', 'style'];
 
-            var basicStructsNode = this.node('p', {}, this.menu);
-            for (var id of basicStructs) {
+            let basicStructsNode = this.node('p', {}, this.menu);
+            for (let id of basicStructs) {
                 this.addObject(id, ref[id], basicStructsNode);
             }
 
-            var symbolizersNode = this.node('p', {}, this.menu);
-            for (var id in ref.symbolizers) {
+            let symbolizersNode = this.node('p', {}, this.menu);
+            for (let id in ref.symbolizers) {
                 this.addObject(id, ref.symbolizers[id], symbolizersNode);
             }
 
-            var commonProps = '*';
-            var commonPropsNode = this.node('p', {}, this.menu);
+            let commonProps = '*';
+            let commonPropsNode = this.node('p', {}, this.menu);
             this.addObject(this.commonPropsId, ref[commonProps], commonPropsNode);
 
             if (window.location.hash) window.location = window.location;
@@ -65,18 +87,18 @@
         },
 
         addObjectBlock: function (id, rules) {
-            var container = this.node('div', {className: 'symbolizer'}, this.container);
-            var section = this.node('h2', {}, container);
+            let container = this.node('div', {className: 'symbolizer'}, this.container);
+            let section = this.node('h2', {}, container);
             this.node('a', {href: '#' + id, id: id}, section, id);
-            for (var ruleId in rules) {
+            for (let ruleId in rules) {
                 this.addProperty(id, ruleId, rules[ruleId], container);
             }
         },
 
         addProperty: function (objId, id, props, parent) {
-            var see_also = props['see-also'];
-            var title = this.node('h3', {}, parent);
-            var prop_anchor = this.prop_anchor(objId, id);
+            let see_also = props['see-also'];
+            let title = this.node('h3', {}, parent);
+            let prop_anchor = this.prop_anchor(objId, id);
             this.node('a', {id: prop_anchor, href: '#' + prop_anchor}, title, id);
 
             if (props.type) {
@@ -91,9 +113,9 @@
                 this.node('p', {}, parent, this.codize(props.doc));
             }
 
-            var defaultValue = props['default-value'];
-            var defaultValueUndefined = defaultValue === undefined || defaultValue === null;
-            var defaultValueNode;
+            let defaultValue = props['default-value'];
+            let defaultValueUndefined = defaultValue === undefined || defaultValue === null;
+            let defaultValueNode;
             if (!defaultValueUndefined) {
                 if (defaultValue === '')
                 {
@@ -124,12 +146,21 @@
             }
 
             if (see_also) {
-                var link = see_also.replace('/', '-');
+                let link = see_also.replace('/', '-');
                 if (link == see_also) {
                     link = this.commonPropsId + '-' + see_also
                 }
                 this.propertyNode('See also', '<a href="#' + link + '">' + see_also + '</a>', parent);
             }
+        },
+
+        buildDatasources: function (ref) {
+            let dsNode = this.node('p', {}, this.menu);
+            for (let id in ref.datasources) {
+                this.addObject(id, ref.datasources[id], dsNode);
+            }
+
+            if (window.location.hash) window.location = window.location;
         },
 
         propertyNode: function (name, content, parent) {
