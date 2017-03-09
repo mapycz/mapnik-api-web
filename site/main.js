@@ -6,7 +6,7 @@
         this.fetch();
     };
 
-    let referenceUri = './mapnik/docs/api-reference/';
+    let referenceUri = 'https://raw.githubusercontent.com/mapycz/mapnik/master/docs/api-reference/';
 
     UI.prototype = {
 
